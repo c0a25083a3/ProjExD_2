@@ -2,6 +2,7 @@ import os
 import random
 import sys
 import time
+import math
 import pygame as pg
 
 
@@ -106,6 +107,22 @@ def get_kk_imgs() -> dict[tuple[int,int], pg.Surface]:  # 演習➂ここから
     return kk_imgs  # 演習➂ここまで
 
 
+def calc_orientation(org: pg.Rect,dst: pg.Rect,current_xy: tuple[float, float]) -> tuple[float, float]:
+    """
+    こうかとんとの距離が300未満だとそのまま
+    """
+    dx = dst.centerx - org.centerx
+    dy = dst.centery - org.centery
+    norm = math.sqrt(dx ** 2 + dy ** 2)
+    if norm < 300:
+        return current_xy
+
+    vx = math.sqrt(50) * dx / norm
+    vy = math.sqrt(50) * dy / norm
+
+    return vx, vy
+
+
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -132,6 +149,13 @@ def main():
 
         idx = min(tmr//500,9)
         bb_img = bb_imgs[idx]
+
+        vx, vy = calc_orientation(
+            bb_rct,
+            kk_rct,
+            (vx, vy)
+        )
+
         avx = vx * bb_accs[idx]
         avy = vy * bb_accs[idx]
 
