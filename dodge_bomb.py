@@ -1,6 +1,7 @@
 import os
 import random
 import sys
+import time
 import pygame as pg
 
 
@@ -27,6 +28,35 @@ def check_bound(rect:pg.Rect) -> tuple[bool,bool]:
         tate = False
     return yoko,tate
 
+def gameover(screen: pg.Surface) -> None:  # 課題➀ここから
+    """
+    ゲームオーバー画面
+    """
+    over_surface = pg.Surface((WIDTH,HEIGHT))
+    over_surface.fill((0,0,0))
+    over_surface.set_alpha(180)
+
+    font = pg.font.Font(None,50)
+    gameover_text = font.render("Game Over", True, (255,255,255))
+    gameover_rct = gameover_text.get_rect()
+    gameover_rct.center = (WIDTH//2, HEIGHT//2)
+    over_surface.blit(gameover_text, gameover_rct)
+
+    kk_img = pg.image.load("fig/8.png")
+    kk_img = pg.transform.rotozoom(kk_img, 0, 0.5)
+
+    kk_rct = kk_img.get_rect()
+    kk_rct.center = (WIDTH//2 -120,HEIGHT//2)
+    over_surface.blit(kk_img, kk_rct)
+
+    kk_rct = kk_img.get_rect()
+    kk_rct.center = (WIDTH//2 +120,HEIGHT//2)
+    over_surface.blit(kk_img, kk_rct)
+
+    screen.blit(over_surface, (0, 0))
+    pg.display.update()
+    time.sleep(5)  # 課題➀ここまで
+
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
@@ -48,6 +78,10 @@ def main():
             if event.type == pg.QUIT: 
                 return
         screen.blit(bg_img, [0, 0]) 
+
+        if kk_rct.colliderect(bb_rct):  # kkとbbのrectが重なっていたら
+            gameover(screen)
+            return
 
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
