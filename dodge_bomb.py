@@ -80,15 +80,15 @@ def get_kk_imgs() -> dict[tuple[int,int], pg.Surface]:  # 演習➂ここから
         pg.image.load("fig/3.png"), 0, 0.9
     )
     kk_imgs = {
-        (0,0): kk_img,
-        (0,-5): kk_img,
-        (5,0): pg.transform.rotozoom(kk_img, -90, 1),
-        (-5,0): pg.transform.rotozoom(kk_img, 90, 1),
-        (0,5): pg.transform.rotozoom(kk_img, 180, 1),
-        (5,-5): pg.transform.rotozoom(kk_img, -45, 1),
-        (-5,-5): pg.transform.rotozoom(kk_img, 45, 1),
-        (5,5): pg.transform.rotozoom(kk_img, -135, 1),
-        (-5,5): pg.transform.rotozoom(kk_img, 135, 1),
+        (0,0): kk_img,  
+        (0,-5): pg.transform.rotozoom(kk_img, -90, 1), 
+        (0,5): pg.transform.rotozoom(kk_img, 90, 1),   
+        (-5,0): kk_img, 
+        (5,0): pg.transform.rotozoom(kk_img, 180, 1),  
+        (-5,-5): pg.transform.rotozoom(kk_img, 45, 1), 
+        (5,-5): pg.transform.rotozoom(kk_img, 135, 1), 
+        (-5,5): pg.transform.rotozoom(kk_img, -45, 1), 
+        (5,5): pg.transform.rotozoom(kk_img, -135, 1), 
     }
     return kk_imgs  # 演習➂ここまで
 
