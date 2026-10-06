@@ -28,7 +28,7 @@ def check_bound(rect:pg.Rect) -> tuple[bool,bool]:
         tate = False
     return yoko,tate
 
-def gameover(screen: pg.Surface) -> None:  # 課題➀ここから
+def gameover(screen: pg.Surface) -> None:  # 演習➀ここから
     """
     ゲームオーバー画面
     """
@@ -55,28 +55,78 @@ def gameover(screen: pg.Surface) -> None:  # 課題➀ここから
 
     screen.blit(over_surface, (0, 0))
     pg.display.update()
-    time.sleep(5)  # 課題➀ここまで
+    time.sleep(5)  # 演習➀ここまで
+
+
+def init_bb_imgs() -> tuple[list[pg.Surface],list[int]]:  # 演習➁ここから
+    """
+    大きさと加速変更リスト作成
+    """
+    bb_imgs = []
+    bb_accs = [a for a in range(1,11)]
+    for r in range(1,11):
+        bb_img = pg.Surface((20*r,20*r))
+        bb_img.set_colorkey((0,0,0))
+        pg.draw.circle(bb_img,(255,0,0),(10*r,10*r),10*r)
+        bb_imgs.append(bb_img)
+    return bb_imgs,bb_accs  # 演習➁ここまで
+
+
+def get_kk_imgs() -> dict[tuple[int,int], pg.Surface]:  # 演習➂ここから
+    """
+    移動方向で画像変わるやつ
+    """
+    kk_img = pg.transform.rotozoom(
+        pg.image.load("fig/3.png"), 0, 0.9
+    )
+    kk_imgs = {
+        (0,0): kk_img,
+        (0,-5): kk_img,
+        (5,0): pg.transform.rotozoom(kk_img, -90, 1),
+        (-5,0): pg.transform.rotozoom(kk_img, 90, 1),
+        (0,5): pg.transform.rotozoom(kk_img, 180, 1),
+        (5,-5): pg.transform.rotozoom(kk_img, -45, 1),
+        (-5,-5): pg.transform.rotozoom(kk_img, 45, 1),
+        (5,5): pg.transform.rotozoom(kk_img, -135, 1),
+        (-5,5): pg.transform.rotozoom(kk_img, 135, 1),
+    }
+    return kk_imgs  # 演習➂ここまで
 
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
-    bg_img = pg.image.load("fig/pg_bg.jpg")    
-    kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
+    bg_img = pg.image.load("fig/pg_bg.jpg")   
+     
+    kk_imgs = get_kk_imgs()
+    kk_img = kk_imgs[(0,0)]
+    
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
-    bb_img = pg.Surface((20,20))  # 空のSurface
-    pg.draw.circle(bb_img,(255,0,0),(10,10),10)  # 赤い爆弾
-    bb_img.set_colorkey((0,0,0))  # 四隅の黒を透明に
+
+    bb_imgs,bb_accs = init_bb_imgs()  # 演習➁このへん
+    bb_img = bb_imgs[0]
     bb_rct = bb_img.get_rect()
-    bb_rct.center = random.randint(0,WIDTH),random.randint(0,HEIGHT)
+    bb_rct.center = random.randint(0,WIDTH),random.randint(0,HEIGHT)  
     vx,vy=+5,+5  # 爆弾の初期速度
     clock = pg.time.Clock()
     tmr = 0
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
+
+        idx = min(tmr//500,9)
+        bb_img = bb_imgs[idx]
+        avx = vx * bb_accs[idx]
+        avy = vy * bb_accs[idx]
+
+        cx,cy = bb_rct.center
+        bb_rct.width = bb_img.get_rect().width
+        bb_rct.height = bb_img.get_rect().height
+        bb_rct.center = (cx,cy)
+        
         screen.blit(bg_img, [0, 0]) 
 
         if kk_rct.colliderect(bb_rct):  # kkとbbのrectが重なっていたら
@@ -100,9 +150,10 @@ def main():
         kk_rct.move_ip(sum_mv)
         if check_bound(kk_rct) != (True,True):
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])  #先ほどの動きをキャンセル
+        kk_img = kk_imgs[tuple(sum_mv)]
         screen.blit(kk_img, kk_rct)
 
-        bb_rct.move_ip(vx,vy)  # 練習2:爆弾動く
+        bb_rct.move_ip(avx,avy)
         yoko,tate=check_bound(bb_rct)
         if not yoko:  # yoko == False
             vx *= -1
