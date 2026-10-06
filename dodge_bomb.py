@@ -74,7 +74,9 @@ def init_bb_imgs() -> tuple[list[pg.Surface],list[int]]:  # 演習➁ここか�
 
 def get_kk_imgs() -> dict[tuple[int,int], pg.Surface]:  # 演習➂ここから
     """
-    移動方向で画像変わるやつ
+    押したキーによって画像を変更
+    押した際の移動速度+5,-5で押されているキーを判別
+    同時押しを含め押されているキーに対応した向きに画像を変更
     """
     kk_img = pg.transform.rotozoom(
         pg.image.load("fig/3.png"), 0, 0.9
