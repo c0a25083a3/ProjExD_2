@@ -31,6 +31,10 @@ def check_bound(rect:pg.Rect) -> tuple[bool,bool]:
 def gameover(screen: pg.Surface) -> None:  # 演習➀ここから
     """
     ゲームオーバー画面
+    透過：180
+    WIDTH//2,HEIGHT//2 画面の中心に
+    rotozoom(kk_img,0,縮小)
+    (WIDTH//2 -120)画面中央から-120
     """
     over_surface = pg.Surface((WIDTH,HEIGHT))
     over_surface.fill((0,0,0))
@@ -61,6 +65,9 @@ def gameover(screen: pg.Surface) -> None:  # 演習➀ここから
 def init_bb_imgs() -> tuple[list[pg.Surface],list[int]]:  # 演習➁ここから
     """
     大きさと加速変更リスト作成
+    1-10まで回す
+    rの数によって20をかける
+    背景透明化と赤丸の描画
     """
     bb_imgs = []
     bb_accs = [a for a in range(1,11)]
@@ -77,6 +84,7 @@ def get_kk_imgs() -> dict[tuple[int,int], pg.Surface]:  # 演習➂ここから
     押したキーによって画像を変更
     押した際の移動速度+5,-5で押されているキーを判別
     同時押しを含め押されているキーに対応した向きに画像を変更
+    (lehtキー,rightキー):pg.transform.rotooom(kk_img,回転,1)
     """
     kk_img = pg.transform.rotozoom(
         pg.image.load("fig/3.png"), 0, 0.9
